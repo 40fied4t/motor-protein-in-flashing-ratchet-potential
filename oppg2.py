@@ -11,14 +11,13 @@ beta=1/T/Kb
 
 dt=1
 h=1
-start_distance=1
-max_t=200
+max_t=100
 num_par=101
 e=np.e
 
 
 def V(x):
-    return x
+    return 1
 
 def pp(x,V):
     p = 1/(1+e**(-beta*(V(x-1)-V(x+1)))+e**(-beta*(V(x)-V(x+1))))
@@ -32,7 +31,7 @@ def pm(x,V):
     p = 1/(1+e**(-beta*(V(x+1)-V(x-1)))+e**(-beta*(V(x)-V(x-1))))
     return p
 
-def random_step(x,h):
+def random_step(x,h,V):
     r= rand.random()
     if (r<pm(x,V)):
         return -h
@@ -44,14 +43,14 @@ def random_step(x,h):
 def simulation(start_pos,max_t,h):
     XX=start_pos
     for i in range(0,max_t):
-        for j in range(0,np.size(XX)+1):
+        for j in range(0,np.size(XX)):
             XX[j]=XX[j]+random_step(XX[j],h,V)
     return XX
 
-def multiSim(N):
+def multiSim(N,start_pos,max_t,h):
     totXX=np.array([0])
     for i in range(N):
-        XX = simulation()
+        XX = simulation(start_pos,max_t,h)
         totXX=np.concatenate((totXX,XX))
     return totXX
 
@@ -70,8 +69,8 @@ def animate(XX):
     plt.show()
 
 #animate(simulation())
-
+start_pos=np.arange(-50,51,h)
 plt.figure("d")
-plt.hist(multiSim(100),bins=20,density=True)
+plt.hist(multiSim(100,start_pos,max_t,h),bins=20,density=True)
 plt.show()
 
