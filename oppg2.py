@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 import random as rand
-from collections import Counter
 
 # Konstanter
 T=1
@@ -40,17 +39,17 @@ def random_step(x,h,V):
     else:
         return 0
 
-def simulation(start_pos,max_t,h):
+def simulation(start_pos,max_t,h, V):
     XX=start_pos
     for i in range(0,max_t):
         for j in range(0,np.size(XX)):
             XX[j]=XX[j]+random_step(XX[j],h,V)
     return XX
 
-def multiSim(N,start_pos,max_t,h):
+def multiSim(N,start_pos,max_t,h, V = V):
     totXX=np.array([0])
     for i in range(N):
-        XX = simulation(start_pos,max_t,h)
+        XX = simulation(start_pos,max_t,h, V)
         totXX=np.concatenate((totXX,XX))
     return totXX
 
