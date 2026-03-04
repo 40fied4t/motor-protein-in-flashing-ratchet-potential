@@ -1,5 +1,7 @@
+from Scripts import *
+
 def main():
-    print("Hello from prosjekt2-alfredgs-gauteod!")
+    print("Hello world")
 
 
 if __name__ == "__main__":
