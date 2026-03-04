@@ -99,7 +99,7 @@ def simulate3(
             XX += x_0,
             
         if c%2:
-            currents[c//2] = np.mean(n)(2 * T_p)
+            currents[c//2] = np.mean(n)/(2 * T_p)
             n = np.zeros_like(x)
 
     return x, currents, XX
