@@ -1,7 +1,8 @@
-from Scripts import *
+from Scripts import oppg3
+import numpy as np
 
 def main():
-    print("Hello world")
+    oppg3.V_2(x  = x, k = 1, a = 2, b = 3)
 
 
 if __name__ == "__main__":
