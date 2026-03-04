@@ -61,7 +61,7 @@ def simulate3(
         T_p : int = 500, 
         N_x : int = 100, 
         N_p : int = 1200,
-        k : int  = 1,
+        k : int  = 1000,
         spatialPeriods : int  = 2,
         cycles : int = 10):
     
@@ -77,7 +77,6 @@ def simulate3(
     p_minus = (p_1[0], p_2[0])
     p_plus = (p_1[1], p_2[1])
 
-    print(p_1)
     n = np.zeros_like(x_0)
 
     currents = np.zeros(cycles)
@@ -94,13 +93,13 @@ def simulate3(
             x[r < prob_minus] -= 1
             x[1 - prob_plus < r] += 1
 
-            n += x - x_0
+            n += x - x_0%N
             x_0 = x
 
             XX += x_0,
             
         if c%2:
-            currents[c//2] = np.mean(n)/(2*T_p)
+            currents[c//2] = np.mean(n)(2 * T_p)
             n = np.zeros_like(x)
 
     return x, currents, XX
