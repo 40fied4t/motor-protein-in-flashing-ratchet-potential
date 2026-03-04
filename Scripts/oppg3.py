@@ -1,4 +1,4 @@
-import tqdm
+from tqdm import trange
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -20,20 +20,21 @@ def V_1(
         pot:    Potentialet V_1
     """
     x_modN =x%N_x
-    mask = x_modN <= alpha * N_x
 
     pot = -k*(x_modN-N_x)/((1 - alpha)*N_x)
-    pot[mask]  =(k * x_modN/(alpha * N_x))[mask]
+    pot[x_modN <= alpha * N_x]  =(k * x_modN/(alpha * N_x))[x_modN <= alpha * N_x]
 
     return pot
     
-def V_2(*args) -> int:
-    return 1
+def V_2(x, *args) -> int:
+    return np.zeros_like(x)
 
 def probabilities(
         V : function,
         x_0 : np.ArrayLike,
-        *args
+        k : float,
+        N_x : float,
+        alpha : float
         ) -> np.ArrayLike : 
     """
     params:
@@ -45,9 +46,9 @@ def probabilities(
         
     """
 
-    pot_minus = V(x_0 - 1, *args)
-    pot_zero  = V(x_0, *args)
-    pot_plus  = V(x_0 + 1, *args)
+    pot_minus = V(x_0 - 1, k, N_x, alpha)
+    pot_zero  = V(x_0, k, N_x, alpha)
+    pot_plus  = V(x_0 + 1, k, N_x, alpha)
 
     p_minus = (1 + np.exp(pot_minus - pot_plus) + np.exp(pot_minus - pot_zero))**-1
     #p_zero = (1 + np.exp(pot_zero - pot_plus) + np.exp(pot_zero - pot_minus))**-1
@@ -56,21 +57,48 @@ def probabilities(
     return p_minus, p_plus
 
 def simulate3(
-        alpha : float, 
-        T_p : int, 
-        N_x : int, 
-        N_p : int, k : int,
-        spatialPeriods : int,
-        cycles : int):
+        alpha : float  = 0.8, 
+        T_p : int = 500, 
+        N_x : int = 100, 
+        N_p : int = 1200,
+        k : int  = 1,
+        spatialPeriods : int  = 2,
+        cycles : int = 10):
     
-    N = N_x * spatialPeriods
-    x_ref : np.ndarray  = np.arange(N_x * spatialPeriods + 1)
-    x_0 : np.ndarray = np.asarray([x for x in range(N_p//N) for _ in range(N)])
+    N = N_x * spatialPeriods                                                    #number of binding sites
+    x_ref : np.ndarray  = np.arange(N)                                          #reference array of positions
+    x_0 : np.ndarray = np.asarray([i for i in range(N) for _ in range(N_p//N)]) #array of all particles
+    print(x_0)
 
-    V : function = [V_1, V_2][c%2] #Bytter potensial to ganger per cycle
-    p_1 = probabilities(V_1, x_ref, k = k, N_x = N_x, )
-    for c in tqdm(range(2 * cycles), ascii = True, desc = "running half-cycles"):
-        pass
+    p_1 = probabilities(V_1, x_ref, k, N_x, alpha)
+    p_2 = probabilities(V_2, x_ref, k, N_x , alpha)
 
+    p_minus = (p_1[0], p_2[0])
+    p_plus = (p_1[1], p_2[1])
 
+    print(p_1)
+    n = np.zeros_like(x_0)
+
+    currents = np.zeros(cycles)
+    for c in trange(2 * cycles, ascii = True, desc  = "runnning half-cycles"):
+        pm  = p_minus[c%2]
+        pp =  p_plus[c%2]
+
+        for t in range(T_p):
+            x = x_0%N
+            prob_minus = np.asarray([pm[i] for i in x])
+            prob_plus = np.asarray([pp[i] for i in x])
+
+            r = np.random.rand(N_p)
+            x[r < prob_minus] -= 1
+            x[1 - prob_plus < r] += 1
+
+            n += x - x_0
+            x_0 = x
+            
+        if c%2:
+            currents[c//2] = np.mean(n)/(2*T_p)
+            n = np.zeros_like(x)
+
+    return x, currents
 
