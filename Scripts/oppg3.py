@@ -55,10 +55,22 @@ def probabilities(
     
     return p_minus, p_plus
 
-def simulate3(alpha : float, T_p : int, N_x : int, k : int, cycles : int):
+def simulate3(
+        alpha : float, 
+        T_p : int, 
+        N_x : int, 
+        N_p : int, k : int,
+        spatialPeriods : int,
+        cycles : int):
     
+    N = N_x * spatialPeriods
+    x_ref : np.ndarray  = np.arange(N_x * spatialPeriods + 1)
+    x_0 : np.ndarray = np.asarray([x for x in range(N_p//N) for _ in range(N)])
 
-    for c in tqdm(range(2 * cycles)):
-        pot : function = [V_1, V_2][c%2]
+    V : function = [V_1, V_2][c%2] #Bytter potensial to ganger per cycle
+    p_1 = probabilities(V_1, x_ref, k = k, N_x = N_x, )
+    for c in tqdm(range(2 * cycles), ascii = True, desc = "running half-cycles"):
+        pass
+
 
 
