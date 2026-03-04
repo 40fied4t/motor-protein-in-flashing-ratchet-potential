@@ -69,20 +69,20 @@ def simulate3(
     XX = []                                                   #number of binding sites
     x_ref : np.ndarray  = np.arange(N)                                          #reference array of positions
     x_0 : np.ndarray = np.asarray([i for i in range(N) for _ in range(N_p//N)]) #array of all particles
-    XX += x_0,
+    XX.append(x_0)
 
     p_1 = probabilities(V_1, x_ref, k, N_x, alpha)
     p_2 = probabilities(V_2, x_ref, k, N_x , alpha)
 
-    p_minus = (p_1[0], p_2[0])
-    p_plus = (p_1[1], p_2[1])
+    pm_tup = (p_1[0], p_2[0])
+    pp_tup = (p_1[1], p_2[1])
 
     n = np.zeros_like(x_0)
 
     currents = np.zeros(cycles)
     for c in trange(2 * cycles, ascii = True, desc  = "runnning half-cycles"):
-        pm  = p_minus[c%2]
-        pp =  p_plus[c%2]
+        pm  = pm_tup[c%2]
+        pp =  pp_tup[c%2]
 
         for t in range(T_p):
             x = x_0%N
@@ -96,7 +96,7 @@ def simulate3(
             n += x - x_0%N
             x_0 = x
 
-            XX += x_0,
+            XX.append(x_0)
             
         if c%2:
             currents[c//2] = np.mean(n)/(2 * T_p)
