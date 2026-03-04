@@ -65,10 +65,11 @@ def simulate3(
         spatialPeriods : int  = 2,
         cycles : int = 10):
     
-    N = N_x * spatialPeriods                                                    #number of binding sites
+    N = N_x * spatialPeriods 
+    XX = []                                                   #number of binding sites
     x_ref : np.ndarray  = np.arange(N)                                          #reference array of positions
     x_0 : np.ndarray = np.asarray([i for i in range(N) for _ in range(N_p//N)]) #array of all particles
-    print(x_0)
+    XX += x_0,
 
     p_1 = probabilities(V_1, x_ref, k, N_x, alpha)
     p_2 = probabilities(V_2, x_ref, k, N_x , alpha)
@@ -95,10 +96,11 @@ def simulate3(
 
             n += x - x_0
             x_0 = x
+
+            XX += x_0,
             
         if c%2:
             currents[c//2] = np.mean(n)/(2*T_p)
             n = np.zeros_like(x)
 
-    return x, currents
-
+    return x, currents, XX
