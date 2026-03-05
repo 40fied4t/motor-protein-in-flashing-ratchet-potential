@@ -2,8 +2,6 @@ from tqdm import trange
 import numpy as np
 import matplotlib.pyplot as plt
 
-#konstanter
-
 def V_1(
         x : np.ArrayLike,
         k : float       = 1,
@@ -50,13 +48,12 @@ def probabilities(
     pot_plus  = V(x_0 + 1, k, N_x, alpha)
 
     p_minus = (1 + np.exp(pot_minus - pot_plus) + np.exp(pot_minus - pot_zero))**-1
-    #p_zero = (1 + np.exp(pot_zero - pot_plus) + np.exp(pot_zero - pot_minus))**-1
     p_plus = (1 + np.exp(pot_plus - pot_zero) + np.exp(pot_plus - pot_minus))**-1
     
     return p_minus, p_plus
 
 def simulate3(
-        startPositions : np.ndarray = None,
+        startPositions : np.ndarray = np.arange(200),
         alpha : float  = 0.8, 
         T_p : int = 500, 
         N_x : int = 100, 
@@ -68,11 +65,11 @@ def simulate3(
         )-> tuple[np.ndarray, np.ndarray, list]:
     """
     params:
-        startPositions: array over startposisjoner, hvis None brukes fylles alle posisjoner
+        startPositions: array over startposisjoner
         alpha: konstant, forskyver potensialet
         T_p: tidsperiode for en halv syklus
         N_x: romlig periode for potensial
-        N_p antall partikler, rundes av til multiplum av antall len(startPositions)
+        N_p antall partikler, rundes av til multiplum av antall festepunkter
         k: samlet konstant lik k * beta
         spatialPeriods: antall romlige perioder, gir antall festepunkter som N_p * spatialPeriods
         cycles: antall sykler som skal simuleres
@@ -88,8 +85,6 @@ def simulate3(
     XX = [] 
     x_ref : np.ndarray  = np.arange(N) #referansearray for x-aksen. Verdier samsvarer med indeks for referansearrayer
     
-    if startPositions == None:
-        startPositions = x_ref
 
     x_0 : np.ndarray = np.asarray([i for i in startPositions for _ in range(N_p//len(startPositions))]) #array med alle partikler
     XX.append(x_0)
