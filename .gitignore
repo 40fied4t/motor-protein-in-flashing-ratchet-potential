@@ -10,5 +10,4 @@ wheels/
 .venv
 
 # Jupyter notebook
-
-*.ipynb
+prosjekt2.ipynb

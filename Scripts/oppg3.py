@@ -35,14 +35,13 @@ def probabilities(
         k : float,
         N_x : float,
         alpha : float
-        ) -> np.ArrayLike : 
+        ) -> tuple[np.ndarray, np.ndarray] : 
     """
     params:
         V:    potensialfunksjonen sannsynlighetene beregnes ut ifra
         x_0:      ArrayLike med posisjoner, hvis sannsynlighet for forflyttning skal finnes
         *args:  parameterene som potensialet tar inn
-
-    return:
+    returns:
         
     """
 
@@ -57,6 +56,7 @@ def probabilities(
     return p_minus, p_plus
 
 def simulate3(
+        startPositions : np.ndarray = None,
         alpha : float  = 0.8, 
         T_p : int = 500, 
         N_x : int = 100, 
@@ -66,11 +66,32 @@ def simulate3(
         cycles : int = 10,
         startV_2 : bool = False
         )-> tuple[np.ndarray, np.ndarray, list]:
+    """
+    params:
+        startPositions: array over startposisjoner, hvis None brukes fylles alle posisjoner
+        alpha: konstant, forskyver potensialet
+        T_p: tidsperiode for en halv syklus
+        N_x: romlig periode for potensial
+        N_p antall partikler, rundes av til multiplum av antall len(startPositions)
+        k: samlet konstant lik k * beta
+        spatialPeriods: antall romlige perioder, gir antall festepunkter som N_p * spatialPeriods
+        cycles: antall sykler som skal simuleres
+        startV_2: hvis True starter blir V_2 det første potensialet
+    returns:
+        x: array med sluttposisjoner
+        currents: array
+        XX: matrise med posisjoner for hvert tidssteg slik at x(t) = X[t]
+    """
+
     
-    N = N_x * spatialPeriods 
-    XX = []                                                   #number of binding sites
-    x_ref : np.ndarray  = np.arange(N)                                          #reference array of positions
-    x_0 : np.ndarray = np.asarray([i for i in range(N) for _ in range(N_p//N)]) #array of all particles
+    N = N_x * spatialPeriods #antall festepunkter
+    XX = [] 
+    x_ref : np.ndarray  = np.arange(N) #referansearray for x-aksen. Verdier samsvarer med indeks for referansearrayer
+    
+    if startPositions == None:
+        startPositions = x_ref
+
+    x_0 : np.ndarray = np.asarray([i for i in startPositions for _ in range(N_p//len(startPositions))]) #array med alle partikler
     XX.append(x_0)
 
     p_1 = probabilities(V_1, x_ref, k, N_x, alpha)
@@ -83,17 +104,17 @@ def simulate3(
 
     currents = np.zeros(cycles)
     for c in trange(2 * cycles, ascii = True, desc  = "runnning half-cycles"):
-        pm  = pm_tup[c%2 - int(startV_2)]
-        pp =  pp_tup[c%2 - int(startV_2)]
+        pm_ref  = pm_tup[c%2 - int(startV_2)]
+        pp_ref =  pp_tup[c%2 - int(startV_2)]
 
         for t in range(T_p):
             x = x_0%N
-            prob_minus = np.asarray([pm[i] for i in x])
-            prob_plus = np.asarray([pp[i] for i in x])
+            pm = np.asarray([pm_ref[i] for i in x])
+            pp = np.asarray([pp_ref[i] for i in x])
 
             r = np.random.rand(N_p)
-            x[r < prob_minus] -= 1
-            x[1 - prob_plus < r] += 1
+            x[r < pm] -= 1
+            x[1 - pp < r] += 1
 
             n += x - x_0%N
             x_0 = x
