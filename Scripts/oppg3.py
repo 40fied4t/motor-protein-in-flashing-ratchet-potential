@@ -63,7 +63,9 @@ def simulate3(
         N_p : int = 1200,
         k : int  = 1000,
         spatialPeriods : int  = 2,
-        cycles : int = 10):
+        cycles : int = 10,
+        startV_2 : bool = False
+        )-> tuple[np.ndarray, np.ndarray, list]:
     
     N = N_x * spatialPeriods 
     XX = []                                                   #number of binding sites
@@ -81,8 +83,8 @@ def simulate3(
 
     currents = np.zeros(cycles)
     for c in trange(2 * cycles, ascii = True, desc  = "runnning half-cycles"):
-        pm  = pm_tup[c%2]
-        pp =  pp_tup[c%2]
+        pm  = pm_tup[c%2 - int(startV_2)]
+        pp =  pp_tup[c%2 - int(startV_2)]
 
         for t in range(T_p):
             x = x_0%N
