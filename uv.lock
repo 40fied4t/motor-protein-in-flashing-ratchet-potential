@@ -146,6 +146,12 @@ wheels = [
 ]
 
 [[package]]
+name = "nbmerge"
+version = "0.0.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/73/a9/56a02f2a3405397af9924e1d372b2e546ebcdb312d800f3945b321a328a5/nbmerge-0.0.4.tar.gz", hash = "sha256:f432797ee685ed495a2daa4dbb76e2b52028d2c3a38142b523bb5cb832df0882", size = 7590, upload-time = "2017-05-14T21:14:22.954Z" }
+
+[[package]]
 name = "numpy"
 version = "2.4.2"
 source = { registry = "https://pypi.org/simple" }
@@ -222,6 +228,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "matplotlib" },
+    { name = "nbmerge" },
     { name = "numpy" },
     { name = "scipy" },
     { name = "tqdm" },
@@ -230,6 +237,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "nbmerge", specifier = ">=0.0.4" },
     { name = "numpy", specifier = ">=2.4.2" },
     { name = "scipy", specifier = ">=1.17.1" },
     { name = "tqdm", specifier = ">=4.67.3" },
